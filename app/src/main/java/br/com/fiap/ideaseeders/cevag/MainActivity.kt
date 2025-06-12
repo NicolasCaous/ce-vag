@@ -3,45 +3,50 @@ package br.com.fiap.ideaseeders.cevag
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import br.com.fiap.ideaseeders.cevag.screens.MainMenuScreen
+import br.com.fiap.ideaseeders.cevag.screens.AddWineScreen
+import br.com.fiap.ideaseeders.cevag.navigation.NavRoutes
+import br.com.fiap.ideaseeders.cevag.screens.ListWinesScreen
 import br.com.fiap.ideaseeders.cevag.ui.theme.CEVAGTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             CEVAGTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+
+                NavHost(
+                    navController = navController,
+                    startDestination = NavRoutes.MENU
+                ) {
+                    composable(NavRoutes.MENU) {
+                        MainMenuScreen(
+                            onNavigate = { selectedOption ->
+                                when (selectedOption) {
+                                    1 -> navController.navigate(NavRoutes.LIST_WINES)
+                                    2 -> navController.navigate(NavRoutes.ADD_WINE)
+                                }
+                            }
+                        )
+                    }
+
+                    composable(NavRoutes.ADD_WINE) {
+                        AddWineScreen(
+                            onSaved = { navController.popBackStack() } // volta ao menu após salvar
+                        )
+                    }
+
+                    composable(NavRoutes.LIST_WINES) {
+                        ListWinesScreen(onBack = { navController.popBackStack() })
+                    }
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello Nicolas, Nathalia, João, Loão, João Lucas$name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    CEVAGTheme {
-        Greeting("Android")
-    }
-}
