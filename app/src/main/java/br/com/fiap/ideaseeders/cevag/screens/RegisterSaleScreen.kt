@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.fiap.ideaseeders.cevag.viewmodel.WineViewModel
 import br.com.fiap.ideaseeders.cevag.viewmodel.WineViewModelFactory
+import br.com.fiap.ideaseeders.cevag.components.WineActionCard
 
 @Composable
 fun RegisterSaleScreen(onBack: () -> Unit) {
@@ -64,50 +65,30 @@ fun RegisterSaleScreen(onBack: () -> Unit) {
             items(resultados) { vinho ->
                 var qtdVendida by remember { mutableStateOf("") }
 
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = corVinho)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("${vinho.nome} (${vinho.ano})", color = Color.White)
-                        Text("Estoque atual: ${vinho.quantidadeEstoque}", color = Color.White)
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        OutlinedTextField(
-                            value = qtdVendida,
-                            onValueChange = { qtdVendida = it },
-                            label = { Text("Quantidade vendida") },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Button(
-                            onClick = {
-                                val qtd = qtdVendida.toIntOrNull()
-                                if (qtd != null && qtd > 0 && qtd <= vinho.quantidadeEstoque) {
-                                    vm.registrarVenda(vinho.id, qtd) {
-                                        Toast.makeText(context, "Venda registrada!", Toast.LENGTH_SHORT).show()
-                                        qtdVendida = ""
-                                        vm.buscar()
-                                    }
-                                } else {
-                                    Toast.makeText(context, "Quantidade inválida!", Toast.LENGTH_SHORT).show()
-                                }
-                            },
-                            enabled = qtdVendida.toIntOrNull() != null,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White,
-                                contentColor = corVinho
-                            ),
-                            modifier = Modifier.align(Alignment.End)
-                        ) {
-                            Text("Registrar")
+                WineActionCard(
+                    nome = vinho.nome,
+                    ano = vinho.ano,
+                    infoSecundaria = "Estoque atual: ${vinho.quantidadeEstoque}",
+                    labelCampo = "Quantidade vendida",
+                    valorCampo = qtdVendida,
+                    onValueChange = { qtdVendida = it },
+                    textoBotao = "Registrar",
+                    onConfirmar = {
+                        val qtd = qtdVendida.toIntOrNull()
+                        if (qtd != null && qtd > 0 && qtd <= vinho.quantidadeEstoque) {
+                            vm.registrarVenda(vinho.id, qtd) {
+                                Toast.makeText(context, "Venda registrada!", Toast.LENGTH_SHORT).show()
+                                qtdVendida = ""
+                                vm.buscar()
+                            }
+                        } else {
+                            Toast.makeText(context, "Quantidade inválida!", Toast.LENGTH_SHORT).show()
                         }
-                    }
-                }
+                    },
+                    corCard = corVinho,
+                    corTexto = Color.White,
+                    enabled = qtdVendida.toIntOrNull() != null
+                )
             }
         }
 
@@ -125,5 +106,6 @@ fun RegisterSaleScreen(onBack: () -> Unit) {
         }
     }
 }
+
 
 

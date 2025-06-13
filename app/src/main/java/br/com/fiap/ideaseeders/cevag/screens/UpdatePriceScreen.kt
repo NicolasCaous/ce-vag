@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.fiap.ideaseeders.cevag.viewmodel.WineViewModel
 import br.com.fiap.ideaseeders.cevag.viewmodel.WineViewModelFactory
+import br.com.fiap.ideaseeders.cevag.components.WineActionCard
 
 @Composable
 fun UpdatePriceScreen(onBack: () -> Unit) {
@@ -64,50 +65,30 @@ fun UpdatePriceScreen(onBack: () -> Unit) {
             items(resultados) { vinho ->
                 var novoPreco by remember { mutableStateOf("") }
 
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = corVinho)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("${vinho.nome} (${vinho.ano})", color = Color.White)
-                        Text("Preço atual: R$ %.2f".format(vinho.preco), color = Color.White)
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        OutlinedTextField(
-                            value = novoPreco,
-                            onValueChange = { novoPreco = it },
-                            label = { Text("Novo preço") },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Button(
-                            onClick = {
-                                val preco = novoPreco.toDoubleOrNull()
-                                if (preco != null && preco > 0.0) {
-                                    vm.atualizarPreco(vinho.id, preco) {
-                                        Toast.makeText(context, "Preço atualizado!", Toast.LENGTH_SHORT).show()
-                                        novoPreco = ""
-                                        vm.buscar()
-                                    }
-                                } else {
-                                    Toast.makeText(context, "Preço inválido!", Toast.LENGTH_SHORT).show()
-                                }
-                            },
-                            enabled = novoPreco.toDoubleOrNull() != null,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White,
-                                contentColor = corVinho
-                            ),
-                            modifier = Modifier.align(Alignment.End)
-                        ) {
-                            Text("Atualizar")
+                WineActionCard(
+                    nome = vinho.nome,
+                    ano = vinho.ano,
+                    infoSecundaria = "Preço atual: R$ %.2f".format(vinho.preco),
+                    labelCampo = "Novo preço",
+                    valorCampo = novoPreco,
+                    onValueChange = { novoPreco = it },
+                    textoBotao = "Atualizar",
+                    onConfirmar = {
+                        val preco = novoPreco.toDoubleOrNull()
+                        if (preco != null && preco > 0.0) {
+                            vm.atualizarPreco(vinho.id, preco) {
+                                Toast.makeText(context, "Preço atualizado!", Toast.LENGTH_SHORT).show()
+                                novoPreco = ""
+                                vm.buscar()
+                            }
+                        } else {
+                            Toast.makeText(context, "Preço inválido!", Toast.LENGTH_SHORT).show()
                         }
-                    }
-                }
+                    },
+                    corCard = corVinho,
+                    corTexto = Color.White,
+                    enabled = novoPreco.toDoubleOrNull() != null
+                )
             }
         }
 
