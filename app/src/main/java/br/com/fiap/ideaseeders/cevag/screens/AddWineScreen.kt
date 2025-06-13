@@ -53,15 +53,10 @@ fun AddWineScreen(onSaved: () -> Unit) {
         )
 
         campos.forEach { (label, valor) ->
-            OutlinedTextField(
+            CampoTextoForm(
+                label = label,
                 value = valor,
-                onValueChange = { vm.updateUi { copyField(label, it) } },
-                label = { Text(label) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
-                singleLine = true
+                onValueChange = { vm.updateUi { copyField(label, it) } }
             )
         }
 
@@ -107,4 +102,24 @@ private fun WineUiState.copyField(field: String, value: String): WineUiState = w
     "Produtor" -> copy(produtor = value)
     "Qtd em estoque" -> copy(quantidadeEstoque = value)
     else -> this
+}
+
+// Composable auxiliar: CampoTextoForm
+@Composable
+private fun CampoTextoForm(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp),
+        textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
+        singleLine = true
+    )
+    Spacer(modifier = Modifier.height(8.dp))
 }
