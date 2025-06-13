@@ -1,15 +1,16 @@
 package br.com.fiap.ideaseeders.cevag.screens
 
 import android.app.Application
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.fiap.ideaseeders.cevag.viewmodel.WineUiState
 import br.com.fiap.ideaseeders.cevag.viewmodel.WineViewModel
@@ -23,15 +24,25 @@ fun AddWineScreen(onSaved: () -> Unit) {
     )
     val state by vm.uiState.collectAsState()
 
+    val corVinho = Color(0xFF400724)
+    val corCreme = Color(0xFFFFF8E1)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .background(corCreme)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Cadastrar Novo Vinho", modifier = Modifier.padding(bottom = 8.dp))
+        Text(
+            "Cadastrar Novo Vinho",
+            fontSize = 20.sp,
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
 
-        val fields = listOf(
+        val campos = listOf(
             "Nome" to state.nome,
             "Tipo" to state.tipo,
             "Ano" to state.ano,
@@ -41,28 +52,52 @@ fun AddWineScreen(onSaved: () -> Unit) {
             "Qtd em estoque" to state.quantidadeEstoque
         )
 
-        fields.forEach { (label, value) ->
+        campos.forEach { (label, valor) ->
             OutlinedTextField(
-                value = value,
+                value = valor,
                 onValueChange = { vm.updateUi { copyField(label, it) } },
                 label = { Text(label) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
+                singleLine = true
             )
         }
 
-        Button(
-            onClick = {
-                vm.salvarVinho(onSaved)
-            },
-            enabled = state.isValid,
-            modifier = Modifier.align(Alignment.End)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Salvar")
+            Button(
+                onClick = onSaved,
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = corVinho,
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Voltar", fontSize = 14.sp)
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Button(
+                onClick = { vm.salvarVinho(onSaved) },
+                enabled = state.isValid,
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = corVinho,
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Salvar", fontSize = 14.sp)
+            }
         }
     }
 }
-
-// Função de extensão para atualizar campos
 private fun WineUiState.copyField(field: String, value: String): WineUiState = when (field) {
     "Nome" -> copy(nome = value)
     "Tipo" -> copy(tipo = value)

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
+import br.com.fiap.ideaseeders.cevag.database.WineReport
 
 data class WineUiState(
     val nome: String = "",
@@ -80,6 +80,71 @@ class WineViewModel(app: Application) : AndroidViewModel(app) {
     fun carregarVinhos() {
         viewModelScope.launch {
             _wineList.value = dao.listarTodos()
+        }
+    }
+
+    private val _relatorio = MutableStateFlow<WineReport?>(null)
+    val relatorio: StateFlow<WineReport?> = _relatorio
+
+    fun carregarRelatorio() {
+        viewModelScope.launch {
+            _relatorio.value = dao.gerarRelatorio()
+        }
+    }
+
+    private val _pesquisa = MutableStateFlow("")
+    val pesquisa: StateFlow<String> = _pesquisa
+
+    private val _resultadoBusca = MutableStateFlow<List<Wine>>(emptyList())
+    val resultadoBusca: StateFlow<List<Wine>> = _resultadoBusca
+
+    fun atualizarPesquisa(novoValor: String) {
+        _pesquisa.value = novoValor
+    }
+
+    fun buscar() {
+        viewModelScope.launch {
+            _resultadoBusca.value = dao.buscarPorNome(_pesquisa.value)
+        }
+    }
+
+    fun reporEstoque(wineId: Int, quantidade: Int, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            val vinho = dao.buscarPorId(wineId)
+            if (vinho != null) {
+                val atualizado = vinho.copy(quantidadeEstoque = vinho.quantidadeEstoque + quantidade)
+                dao.atualizar(atualizado)
+                onSuccess()
+            }
+        }
+    }
+
+    fun registrarVenda(wineId: Int, quantidade: Int, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            val vinho = dao.buscarPorId(wineId)
+            if (vinho != null && vinho.quantidadeEstoque >= quantidade) {
+                val atualizado = vinho.copy(quantidadeEstoque = vinho.quantidadeEstoque - quantidade)
+                dao.atualizar(atualizado)
+                onSuccess()
+            }
+        }
+    }
+
+    fun excluirVinho(wine: Wine, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            dao.deletar(wine)
+            onSuccess()
+        }
+    }
+
+    fun atualizarPreco(wineId: Int, novoPreco: Double, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            val vinho = dao.buscarPorId(wineId)
+            if (vinho != null) {
+                val atualizado = vinho.copy(preco = novoPreco)
+                dao.atualizar(atualizado)
+                onSuccess()
+            }
         }
     }
 

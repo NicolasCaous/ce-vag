@@ -18,62 +18,52 @@ import br.com.fiap.ideaseeders.cevag.viewmodel.WineViewModel
 import br.com.fiap.ideaseeders.cevag.viewmodel.WineViewModelFactory
 
 @Composable
-fun ListWinesScreen(onBack: () -> Unit) {
+fun SearchWineScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val vm: WineViewModel = viewModel(factory = WineViewModelFactory(context.applicationContext as Application))
-    val wineList by vm.wineList.collectAsState()
+
+    val termo by vm.pesquisa.collectAsState()
+    val resultados by vm.resultadoBusca.collectAsState()
 
     val corVinho = Color(0xFF400724)
     val corCreme = Color(0xFFFFF8E1)
-
-    LaunchedEffect(Unit) {
-        vm.carregarVinhos()
-    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(corCreme)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Lista de Vinhos",
-            fontSize = 20.sp,
+            text = "🔍 Pesquisar Vinho",
             style = MaterialTheme.typography.headlineSmall,
+            fontSize = 20.sp,
             color = corVinho
+        )
+
+        OutlinedTextField(
+            value = termo,
+            onValueChange = {
+                vm.atualizarPesquisa(it)
+                vm.buscar()
+            },
+            label = { Text("Digite o nome do vinho") },
+            modifier = Modifier.fillMaxWidth()
         )
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.weight(1f)
         ) {
-            items(wineList) { vinho ->
+            items(resultados) { vinho ->
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = corVinho),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    colors = CardDefaults.cardColors(containerColor = corVinho)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(12.dp)
-                    ) {
-                        Text(
-                            "🍷 ${vinho.nome} (${vinho.ano}) - ${vinho.tipo}",
-                            fontSize = 14.sp,
-                            color = corCreme
-                        )
-                        Text(
-                            "País: ${vinho.paisOrigem} • Produtor: ${vinho.produtor}",
-                            fontSize = 13.sp,
-                            color = corCreme
-                        )
-                        Text(
-                            "Estoque: ${vinho.quantidadeEstoque} • Preço: R$ %.2f".format(vinho.preco),
-                            fontSize = 13.sp,
-                            color = corCreme
-                        )
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text("${vinho.nome} (${vinho.ano}) - ${vinho.tipo}", color = Color.White)
+                        Text("Estoque: ${vinho.quantidadeEstoque} • Preço: R$ %.2f".format(vinho.preco), color = Color.White)
                     }
                 }
             }
@@ -81,15 +71,13 @@ fun ListWinesScreen(onBack: () -> Unit) {
 
         Button(
             onClick = onBack,
-            modifier = Modifier
-                .align(Alignment.End)
-                .height(40.dp),
+            modifier = Modifier.align(Alignment.End),
             colors = ButtonDefaults.buttonColors(
                 containerColor = corVinho,
                 contentColor = Color.White
             )
         ) {
-            Text("Voltar", fontSize = 14.sp)
+            Text("Voltar")
         }
     }
 }
