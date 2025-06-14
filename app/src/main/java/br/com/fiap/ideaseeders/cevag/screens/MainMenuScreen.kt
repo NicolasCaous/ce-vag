@@ -17,7 +17,6 @@ import br.com.fiap.ideaseeders.cevag.R
 fun MainMenuScreen(
     onNavigate: (Int) -> Unit
 ) {
-    // Cores personalizadas
     val corVinho = Color(0xFF400724)
     val corCreme = Color(0xFFFFF8E1)
 
@@ -29,7 +28,7 @@ fun MainMenuScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top)
     ) {
-        // Logo
+
         Image(
             painter = painterResource(id = R.drawable.slogan),
             contentDescription = "Logo Vinheria Agnello",
@@ -49,7 +48,6 @@ fun MainMenuScreen(
             "8. Atualizar preço"
         )
 
-        // Reduz a altura e espaçamento para caber tudo
         menuOptions.forEachIndexed { index, label ->
             Button(
                 onClick = { onNavigate(index + 1) },

@@ -15,6 +15,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import br.com.fiap.ideaseeders.cevag.viewmodel.WineUiState
 import br.com.fiap.ideaseeders.cevag.viewmodel.WineViewModel
 import br.com.fiap.ideaseeders.cevag.viewmodel.WineViewModelFactory
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun AddWineScreen(onSaved: () -> Unit) {
@@ -31,6 +33,7 @@ fun AddWineScreen(onSaved: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .background(corCreme)
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -104,7 +107,6 @@ private fun WineUiState.copyField(field: String, value: String): WineUiState = w
     else -> this
 }
 
-// Composable auxiliar: CampoTextoForm
 @Composable
 private fun CampoTextoForm(
     label: String,

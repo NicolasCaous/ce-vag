@@ -51,7 +51,6 @@ fun ReportScreen(onBack: () -> Unit) {
         ) {
             Column(modifier = Modifier.padding(0.dp)) {
 
-                // Cabeçalho da tabela
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -65,7 +64,6 @@ fun ReportScreen(onBack: () -> Unit) {
 
                 Divider(color = corVinho, thickness = 1.dp)
 
-                // Corpo da tabela
                 relatorio?.let { r ->
                     TabelaLinha("Total de vinhos cadastrados", r.totalVinhos.toString(), corVinho)
                     TabelaLinha("Total de unidades em estoque", r.totalEstoque.toString(), corVinho)
